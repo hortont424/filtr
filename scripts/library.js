@@ -1,5 +1,6 @@
 var liveNodes = [];
 var outgoingNoodles = {}; // filterBubble[id] -> noodle-element
+var noodleConnections = {}; // filterBubble[id] -> filterBubble[id]
 var currentID = 0;
 
 function removeNoodle(id)
@@ -10,6 +11,12 @@ function removeNoodle(id)
     }
 
     $("#" + id).removeClass("filterBubbleConnected");
+    $("#" + noodleConnections[id]).removeClass("filterBubbleConnected");
+
+    if(id in noodleConnections)
+    {
+        delete noodleConnections[id];
+    }
 }
 
 function newID()
@@ -18,15 +25,30 @@ function newID()
     return "id" + currentID;
 }
 
+function connectNoodles(output, input)
+{
+    noodleConnections[output] = input;
+
+    updateNoodles();
+}
+
 function updateNoodles()
 {
     for(id in outgoingNoodles)
     {
         var editorOffset = $("#editor").offset();
         var noodleOffset = $("#" + id).offset();
+        var destinationNoodleOffset = $("#" + noodleConnections[id]).offset();
+
+        var deltaX = destinationNoodleOffset.left - noodleOffset.left;
+        var deltaY = destinationNoodleOffset.top - noodleOffset.top;
+
         outgoingNoodles[id].css({
             left: noodleOffset.left - editorOffset.left + 7 + "px",
-            top: noodleOffset.top - editorOffset.top + 7 + "px"
+            top: noodleOffset.top - editorOffset.top + 7 + "px",
+
+            height: Math.sqrt(deltaY * deltaY + deltaX * deltaX),
+            webkitTransform: "rotate(" + (Math.atan2(deltaY, deltaX) - Math.PI/2) + "rad)"
         });
 
         // need to keep rotation/destination distance working too
@@ -51,8 +73,8 @@ function loadFilters(filters)
         var proxy = $("<div class='filterNode'><div class='dragHandle'>" + name + "</div></div>");
 
         // eventually these need to be dynamic based on the filter
-        var input = $("<div style='position: absolute; right: 5px; top: 5px;' class='filterBubble' />").appendTo(proxy);
-        var output = $("<div style='position: absolute; right: 5px; bottom: 5px;' class='filterBubble' />").appendTo(proxy);
+        var input = $("<div style='position: absolute; right: 5px; top: 5px;' class='filterBubble filterBubbleIn' />").appendTo(proxy);
+        var output = $("<div style='position: absolute; right: 5px; bottom: 5px;' class='filterBubble filterBubbleOut' />").appendTo(proxy);
 
         connectionDrag(input);
         connectionDrag(output);
@@ -64,6 +86,9 @@ function loadFilters(filters)
     {
         el.attr("id", newID());
         el.drag("start", function(ev, dd) {
+            if(!el.hasClass("filterBubbleOut"))
+                return false;
+
             var id = el.attr("id");
             removeNoodle(id);
 
@@ -79,14 +104,45 @@ function loadFilters(filters)
             $(this).addClass("filterBubbleConnected");
             return proxy;
         }).drag(function(ev, dd) {
+            if(!el.hasClass("filterBubbleOut"))
+                return false;
             var editorOffset = $("#editor").offset();
             $(dd.proxy).css({
                 height: Math.sqrt(dd.deltaY * dd.deltaY + dd.deltaX * dd.deltaX),
-                webkitTransform: "rotate(" + (Math.atan2(dd.deltaY, dd.deltaX) - Math.PI/2) + "rad)",
+                webkitTransform: "rotate(" + (Math.atan2(dd.deltaY, dd.deltaX) - Math.PI/2) + "rad)"
             });
         }).drag("end", function(ev, dd) {
+            if(!el.hasClass("filterBubbleOut"))
+                return false;
+
             var id = el.attr("id");
-            removeNoodle(id);
+            var destinationId;
+            var destination;
+            var droppedOnBubble = false;
+            var editorOffset = $("#editor").offset();
+
+            var mouseX = dd.startX + dd.deltaX;
+            var mouseY = dd.startY + dd.deltaY;
+
+            $(".filterBubbleIn").each(function(index, el) {
+                var bubbleOffset = $(el).offset();
+
+                if(mouseX > bubbleOffset.left - 4 && mouseX < bubbleOffset.left + 16 && mouseY > bubbleOffset.top - 4 && mouseY < bubbleOffset.top + 16)
+                {
+                    droppedOnBubble = true;
+                    destination = $(el);
+                    destinationId = destination.attr("id");
+                    return false;
+                }
+            });
+
+            if (!droppedOnBubble) {
+                removeNoodle(id);
+                return;
+            }
+
+            connectNoodles(id, destinationId);
+            destination.addClass("filterBubbleConnected");
         });
     }
 
@@ -111,6 +167,8 @@ function loadFilters(filters)
 
             editorFilterDrag($(dd.proxy));
             $(dd.proxy).addClass("filterNodeLanded");
+            $("#dragMessage").addClass("dragMessageClosed");
+            $("#libraryList").addClass("noMessage");
         });
     }
 

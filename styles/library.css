@@ -38,15 +38,24 @@
 {
     overflow: scroll;
     width: 100%;
-    position: absolute;
     bottom: 0px;
-    top: 20pt;
+    height: 100%;
+    border-top: 1px solid #999;
 
     margin: 0px;
     padding: 0px;
 
     font-size: 9pt;
     list-style: none;
+
+    position: relative;
+    top: 0px;
+}
+
+#libraryList.noMessage
+{
+    -webkit-transition: top 0.25s ease-in-out;
+    top: -3.6em;
 }
 
 #libraryContainer

@@ -52,7 +52,7 @@ div.filterBubble
     border: 2px solid #7CA7D2;
 }
 
-div.filterBubbleConnected, div.filterBubble:hover
+div.filterBubbleConnected, div.filterBubbleOut:hover
 {
     background-color: #7CA7D2;
 }

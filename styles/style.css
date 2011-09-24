@@ -29,3 +29,40 @@ div.heading
     bottom: 0px;
     background-color: #ccc;
 }
+
+#dragMessage
+{
+    padding: 1.2em 1.0em 0.7em 1.0em;
+    height: 1.7em;
+    font-size: 9pt;
+    font-weight: bold;
+    opacity: 0.5;
+    overflow: hidden;
+}
+
+#dragMessage.dragMessageClosed
+{
+    -webkit-transition: opacity 0.25s ease-in-out;
+    opacity: 0;
+}
+
+#dragArrow
+{
+    float: right;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+
+    border-left: 8px solid black;
+}
+
+#dragArrowHead
+{
+    position: relative;
+    top: 5px;
+    float: right;
+    width: 20px;
+    height: 5px;
+    background-color: black;
+}
