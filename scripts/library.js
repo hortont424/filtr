@@ -8,14 +8,16 @@ function removeNoodle(id)
     if(id in outgoingNoodles)
     {
         outgoingNoodles[id].remove();
-    }
 
-    $("#" + id).removeClass("filterBubbleConnected");
-    $("#" + noodleConnections[id]).removeClass("filterBubbleConnected");
+        $("#" + id).removeClass("filterBubbleConnected");
+        $("#" + noodleConnections[id]).removeClass("filterBubbleConnected");
 
-    if(id in noodleConnections)
-    {
-        delete noodleConnections[id];
+        if(id in noodleConnections)
+        {
+            delete noodleConnections[id];
+        }
+
+        delete outgoingNoodles[id];
     }
 }
 
@@ -27,9 +29,19 @@ function newID()
 
 function connectNoodles(output, input)
 {
+    for(id in noodleConnections)
+    {
+        if(noodleConnections[id] == input)
+        {
+            return false;
+        }
+    }
+
     noodleConnections[output] = input;
 
     updateNoodles();
+
+    return true;
 }
 
 function updateNoodles()
@@ -73,6 +85,7 @@ function loadFilters(filters)
     function proxyWithName(name)
     {
         var proxy = $("<div class='filterNode'><div class='dragHandle'>" + name + "</div></div>");
+        proxy.attr("id", newID());
 
         // eventually these need to be dynamic based on the filter
         var input = $("<div style='position: absolute; right: 5px; top: 5px;' class='filterBubble filterBubbleIn' />").appendTo(proxy);
@@ -138,12 +151,17 @@ function loadFilters(filters)
                 }
             });
 
-            if (!droppedOnBubble) {
+            if (!droppedOnBubble || (destination.parent().attr("id") === $(this).parent().attr("id"))) {
                 removeNoodle(id);
                 return;
             }
 
-            connectNoodles(id, destinationId);
+            if(!connectNoodles(id, destinationId))
+            {
+                removeNoodle(id);
+                return;
+            }
+
             destination.addClass("filterBubbleConnected");
         });
     }
