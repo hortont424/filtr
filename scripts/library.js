@@ -2,9 +2,14 @@ var liveNodes = [];
 var outgoingNoodles = {}; // filterBubble[id] -> noodle-element
 var currentID = 0;
 
-function removeConnection()
+function removeNoodle(id)
 {
+    if(id in outgoingNoodles)
+    {
+        outgoingNoodles[id].remove();
+    }
 
+    $("#" + id).removeClass("filterBubbleConnected");
 }
 
 function newID()
@@ -23,6 +28,8 @@ function updateNoodles()
             left: noodleOffset.left - editorOffset.left + 7 + "px",
             top: noodleOffset.top - editorOffset.top + 7 + "px"
         });
+
+        // need to keep rotation/destination distance working too
     }
 }
 
@@ -44,8 +51,8 @@ function loadFilters(filters)
         var proxy = $("<div class='filterNode'><div class='dragHandle'>" + name + "</div></div>");
 
         // eventually these need to be dynamic based on the filter
-        var input = $("<div style='position: absolute; right: 5px; top: 5px;' class='filterBubble filterBubbleIn' />").appendTo(proxy);
-        var output = $("<div style='position: absolute; right: 5px; bottom: 5px;' class='filterBubble filterBubbleOut' />").appendTo(proxy);
+        var input = $("<div style='position: absolute; right: 5px; top: 5px;' class='filterBubble' />").appendTo(proxy);
+        var output = $("<div style='position: absolute; right: 5px; bottom: 5px;' class='filterBubble' />").appendTo(proxy);
 
         connectionDrag(input);
         connectionDrag(output);
@@ -58,36 +65,28 @@ function loadFilters(filters)
         el.attr("id", newID());
         el.drag("start", function(ev, dd) {
             var id = el.attr("id");
+            removeNoodle(id);
 
-            if(id in outgoingNoodles)
-            {
-                outgoingNoodles[id].remove();
-            }
-
-            var proxy = $("<div class='noodle' style='height: 20px; width: 2px; background-color: black; position: absolute; z-index: 550;' />");
+            var proxy = $("<div class='noodle' />");
             $("#editor").append(proxy);
             outgoingNoodles[id] = proxy;
             var editorOffset = $("#editor").offset();
             var noodleOffset = $(this).offset();
             proxy.css({
-                left: noodleOffset.left - editorOffset.left + 7 + "px",
-                top: noodleOffset.top - editorOffset.top + 7 + "px",
-                webkitTransformOrigin: "50% 0%",
-                backgroundColor: $(this).css("border-top-color")
+                left: noodleOffset.left - editorOffset.left + 6 + "px",
+                top: noodleOffset.top - editorOffset.top + 6 + "px",
             });
-            $(this).css({
-                backgroundColor: $(this).css("border-top-color")
-            });
+            $(this).addClass("filterBubbleConnected");
             return proxy;
         }).drag(function(ev, dd) {
             var editorOffset = $("#editor").offset();
             $(dd.proxy).css({
                 height: Math.sqrt(dd.deltaY * dd.deltaY + dd.deltaX * dd.deltaX),
                 webkitTransform: "rotate(" + (Math.atan2(dd.deltaY, dd.deltaX) - Math.PI/2) + "rad)",
-
             });
-        }).drag("end", function(ev, dd){
-
+        }).drag("end", function(ev, dd) {
+            var id = el.attr("id");
+            removeNoodle(id);
         });
     }
 
@@ -102,7 +101,7 @@ function loadFilters(filters)
                 top: dd.offsetY,
                 left: dd.offsetX
             });
-        }).drag("end", function(ev, dd){
+        }).drag("end", function(ev, dd) {
             var editorOffset = $("#editor").offset();
             $(dd.proxy).css({
                 position: "absolute",
