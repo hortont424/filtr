@@ -59,7 +59,9 @@ function loadFilters(filters)
 {
     function editorFilterDrag(el)
     {
-        el.drag(function(ev, dd) {
+        el.drag("start", function() {
+            $(this).appendTo(this.parentNode);
+        }).drag(function(ev, dd) {
             $(this).css({
                 top: dd.offsetY,
                 left: dd.offsetX
