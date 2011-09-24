@@ -1,0 +1,62 @@
+#libraryList li
+{
+    padding: 0px;
+    margin: 0px 0px;
+
+    background-image: -webkit-linear-gradient(#fff, #ddd);
+    border-bottom: 1px solid #999;
+
+    cursor: hand;
+    height: 4em;
+}
+
+#libraryList li>img
+{
+    margin: 0px;
+    padding: 0.5em;
+    height: 3em;
+    width: 3em;
+    right: 0px;
+    position: absolute;
+}
+
+#libraryList span.filter-title
+{
+    padding: 1.45em 1em;
+    position: absolute;
+}
+
+#libraryList li:hover
+{
+    color: white;
+    font-weight: bold;
+    background-image: -webkit-linear-gradient(#74C7FB, #2A88CC);
+    border-bottom: 1px solid #00488C;
+}
+
+#libraryList
+{
+    overflow: scroll;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    top: 20pt;
+
+    margin: 0px;
+    padding: 0px;
+
+    font-size: 9pt;
+    list-style: none;
+}
+
+#libraryContainer
+{
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    background-color: #d6dce3;
+    left: 0px;
+    width: 200px;
+    border-right: 1px solid #999;
+    z-index: 20;
+}
