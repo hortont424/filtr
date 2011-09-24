@@ -1,0 +1,130 @@
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font: 11pt 'Lucida Grande';
+  -webkit-user-select: none;
+}
+
+#libraryList li
+{
+    padding: 0px;
+    margin: 0px 0px;
+
+    background-image: -webkit-linear-gradient(#e6ecf3, #d6dce3);
+    border-bottom: 1px solid #999;
+
+    cursor: hand;
+    height: 4em;
+}
+
+#libraryList li>img
+{
+    margin: 0px;
+    padding: 0.5em;
+    height: 3em;
+    width: 3em;
+    right: 0px;
+    position: absolute;
+}
+
+span.filter-title
+{
+    padding: 1.45em 1em;
+    position: absolute;
+}
+
+#libraryList li:hover
+{
+    background-image: -webkit-linear-gradient(#e6ecf3, #c6ccd3);
+}
+
+#libraryList li.selected
+{
+    color: white;
+    font-weight: bold;
+    background-image: -webkit-linear-gradient(#64B7EB, #2A88CC);
+    border-bottom: 1px solid #00488C;
+}
+
+div.heading
+{
+    background-image: -webkit-linear-gradient(white, #ddd, #bbb);
+    border-bottom: 1px solid #666;
+    color: #444;
+    font-variant:small-caps;
+    font-weight: bold;
+    padding: 2px 0px 5px 5px;
+    position: relative;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    z-index: 10;
+}
+
+/* All toplevel layout containers */
+#libraryContainer, #editorContainer, #previewContainer
+{
+    position: fixed;
+}
+
+/* Left Column */
+#libraryContainer
+{
+    left: 0px;
+    width: 200px;
+    border-right: 1px solid #999;
+    z-index: 20;
+}
+
+/* Right Column */
+#editorContainer, #previewContainer
+{
+    left: 201px;
+    right: 0;
+}
+
+#libraryContainer
+{
+    top: 0px;
+    bottom: 0px;
+    background-color: #d6dce3;
+}
+
+#editorContainer
+{
+    top: 0px;
+    bottom: 30%;
+    border-bottom: 2px solid #999;
+    background-color: #eee;
+}
+
+#previewContainer
+{
+    top: 70%;
+    bottom: 0px;
+    background-color: #ccc;
+}
+
+#libraryList
+{
+    overflow: scroll;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    top: 20pt;
+
+    margin: 0px;
+    padding: 0px;
+
+    font-size: 9pt;
+    list-style: none;
+}
+
+#editor
+{
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    top: 22pt;
+    overflow: scroll;
+}

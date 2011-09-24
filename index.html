@@ -1,0 +1,73 @@
+<html>
+<head>
+    <title>filtr</title>
+    <link rel="stylesheet" href="styles/style.css" type="text/css" media="screen" charset="utf-8">
+    <script type="text/javascript" charset="utf-8" src="scripts/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="scripts/jquery.event.drag.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    function onLoad()
+    {
+        filters = [{"name": "Gaussian Blur", "icon": "gaussian-blur.png", "function": feGaussianBlur},
+                   {"name": "Gaussian Blur", "icon": "gaussian-blur.png", "function": feGaussianBlur}];
+
+        for(id in filters)
+        {
+            f = filters[id];
+            filterListEntry = $("<li class='filter'><img src='images/" + f["icon"] + "'/><span class='filter-title'>" + f["name"] + "</span></li>");
+            filterListEntry.mousedown(selectFilter)
+                    .drag("start", function(ev, dd){
+                        proxy = $("<div style='background-color: transparent; border: 1px solid #999; border-radius: 8px; width: 200px; height: 4em; position: fixed; z-index: 500;'/>");
+                        $("#editor").append(proxy);
+                        return proxy;
+                    }).drag(function( ev, dd ){
+                          $( dd.proxy ).css({
+                             top: dd.offsetY,
+                             left: dd.offsetX
+                          });
+                       }).drag("end", function(ev, dd){
+                           $(dd.proxy).css({
+                               position: "absolute",
+                               left: parseInt($(dd.proxy).css("left")) - $("#editor").offset().left + "px",
+                               top: parseInt($(dd.proxy).css("top")) - $("#editor").offset().top + "px"
+                               });
+                           $(dd.proxy).drag(function( ev, dd ){
+                                     $( this ).css({
+                                        top: dd.offsetY,
+                                        left: dd.offsetX
+                                     });
+                                  }, {relative: true});
+                       });
+            $("#libraryList").append(filterListEntry);
+        }
+    }
+
+    function selectFilter()
+    {
+        $("#libraryList").children().removeClass("selected");
+        $(this).addClass("selected");
+    }
+
+    function feGaussianBlur()
+    {
+        alert("lol");
+    }
+    </script>
+</head>
+<body onload="onLoad()">
+<div id="libraryContainer">
+    <div class="heading">
+        filter library
+    </div>
+    <ul id="libraryList" />
+</div>
+<div id="editorContainer">
+    <div class="heading">
+        editor
+    </div>
+    <div id="editor">
+    </div>
+</div>
+
+<div id="previewContainer" />
+</body>
+</html>
