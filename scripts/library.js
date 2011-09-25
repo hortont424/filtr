@@ -1,7 +1,9 @@
 var liveNodes = [];
 var outgoingNoodles = {}; // filterBubble[id] -> noodle-element
 var noodleConnections = {}; // filterBubble[id] -> filterBubble[id]
+var parameterMap = {}; //filterBubble[id] -> [filterNode[id], parameter]
 var currentID = 0;
+var masterInput, masterOutput;
 
 function removeNoodle(id)
 {
@@ -19,6 +21,8 @@ function removeNoodle(id)
 
         delete outgoingNoodles[id];
     }
+
+    updateFilter();
 }
 
 function newID()
@@ -41,7 +45,24 @@ function connectNoodles(output, input)
 
     updateNoodles();
 
+    updateFilter();
+
     return true;
+}
+
+function updateFilter()
+{
+    var filterString = "";
+    var nextFEId = masterInput.attr("id");
+
+    for(fe in noodleConnections)
+    {
+        parameterFrom = parameterMap[fe];
+        parameterTo = parameterMap[noodleConnections[fe]];
+        filterString += parameterFrom[0] + "(" + parameterFrom[1] + ")" + " -> " + parameterTo[0] + "(" + parameterTo[1] + ")" + "; ";
+    }
+
+    $("#previewContainer").html(filterString);
 }
 
 function updateNoodles()
@@ -79,6 +100,8 @@ function setupMasterInput()
     masterInput.addClass("filterNodeLanded");
     masterInput.addClass("feMasterInput");
 
+    parameterMap[output.attr("id")] = [masterInput.attr("id"), "result"];
+
     $("#editor").append(masterInput);
 }
 
@@ -95,6 +118,8 @@ function setupMasterOutput()
     editorFilterDrag(masterOutput);
     masterOutput.addClass("filterNodeLanded");
     masterOutput.addClass("feMasterOutput");
+
+    parameterMap[output.attr("id")] = [masterOutput.attr("id"), "in"];
 
     $("#editor").append(masterOutput);
 }
@@ -183,17 +208,25 @@ function editorFilterDrag(el)
 
 function loadFilters(filters)
 {
-    function proxyWithName(name)
+    function proxyWithParams(f)
     {
-        var proxy = $("<div class='filterNode'><div class='dragHandle'>" + name + "</div></div>");
+        var proxy = $("<div class='filterNode'><div class='dragHandle'>" + f["name"] + "</div></div>");
         proxy.attr("id", newID());
 
         // eventually these need to be dynamic based on the filter
-        var input = $("<div style='top: -8px;' class='filterBubble filterBubbleIn' />").appendTo(proxy);
-        var output = $("<div style='bottom: -8px;' class='filterBubble filterBubbleOut' />").appendTo(proxy);
 
-        connectionDrag(input);
+        var inputRight = 8;
+        for(i in f["inputs"])
+        {
+            var input = $("<div class='filterBubble filterBubbleIn' />").appendTo(proxy).css({"right": inputRight, "top": -8});
+            connectionDrag(input);
+            inputRight += 24;
+            parameterMap[input.attr("id")] = [proxy.attr("id"), f["inputs"][i]];
+        }
+
+        var output = $("<div style='bottom: -8px;' class='filterBubble filterBubbleOut' />").appendTo(proxy);
         connectionDrag(output);
+        parameterMap[output.attr("id")] = [proxy.attr("id"), "result"];
 
         return proxy;
     }
@@ -201,7 +234,7 @@ function loadFilters(filters)
     function listFilterProxyDrag(el)
     {
         el.drag("start", function(ev, dd) {
-            var proxy = proxyWithName(f["name"]);
+            var proxy = proxyWithParams(f);
             $("#editor").prepend(proxy);
             return proxy;
         }).drag(function(ev, dd) {
