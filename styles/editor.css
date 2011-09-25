@@ -47,9 +47,13 @@ div.filterBubble
     height: 12px;
     border-radius: 12px;
     opacity: 1.0;
+    z-index: 50;
+    position: absolute;
+    right: 8px;
 
     background-color: #8EC9EB;
     border: 2px solid #7CA7D2;
+    box-shadow: 0px 0px 4px #999;
 }
 
 div.filterBubbleConnected, div.filterBubbleOut:hover
@@ -84,7 +88,15 @@ div.noodle
     height: 20px;
     width: 4px;
     position: absolute;
-    z-index: 550;
+    z-index: 51;
     -webkit-transform-origin: 50% 0%;
     background-color: #7CA7D2;
+    box-shadow: 0px 0px 4px #999;
+}
+
+/* Move these elsewhere */
+
+.feMasterInput, .feMasterOutput
+{
+    height: 3em !important;
 }
