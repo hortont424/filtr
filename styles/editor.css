@@ -4,7 +4,7 @@
     left: 201px;
     right: 0;
     top: 0px;
-    bottom: 30%;
+    bottom: 0px;
     border-bottom: 2px solid #999;
     background-color: #eee;
 }
@@ -96,7 +96,7 @@ div.noodle
 
 /* Move these elsewhere */
 
-.feMasterInput, .feMasterOutput
+.feMasterInput
 {
     height: 3em !important;
 }

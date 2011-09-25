@@ -1,0 +1,50 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+    <title>filtr</title>
+    <link rel="stylesheet" href="styles/style.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="styles/editor.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="styles/library.css" type="text/css" media="screen" charset="utf-8" />
+    <script type="text/javascript" charset="utf-8" src="scripts/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="scripts/jquery.event.drag.js"></script>
+    <script type="text/javascript" charset="utf-8" src="scripts/library.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    function onLoad()
+    {
+        filters = [{"name": "Gaussian Blur", "icon": "gaussian-blur.png", "inputs": ["in"], "displayName": "feGaussianBlur", "parameters": {"stdDeviation": ["number", 0, 100, 5]}}];
+
+        loadFilters(filters);
+
+        setupMasterInput();
+
+        updateFilter();
+
+        $("#previewContainer").drag("start", function() {
+            $(this).appendTo(this.parentNode);
+        }).drag(function(ev, dd) {
+            $(this).css({
+                top: Math.min(Math.max(dd.offsetY, 20), $("#body").height() - $(this).height() - 20),
+                left: Math.min(Math.max(dd.offsetX, 20), $("#body").width() - $(this).width())
+            });
+        });
+    }
+    </script>
+</head>
+<body id="body" onload="onLoad()">
+<div id="libraryContainer">
+    <div class="heading">filter library</div>
+    <span id="dragMessageContainer"><div id="dragMessage">Drag Filter to Editor<div id="dragArrow"></div><div id="dragArrowHead"></div></div></span>
+    <ul id="libraryList" />
+</div>
+<div id="editorContainer">
+    <div class="heading">editor</div>
+    <div id="editor" />
+</div>
+<div id="previewContainer">
+    <svg width="320px" height="320px" xmlns="http://www.w3.org/2000/svg">
+        <defs id="defs">
+        </defs>
+        <image x="0" y="0" width="320px" height="320px" xlink:href="images/butterfly.svg" filter="url(#filt)"/>
+    </svg>
+</div>
+</body>
+</html>

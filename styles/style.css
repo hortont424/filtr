@@ -23,11 +23,15 @@ div.heading
 #previewContainer
 {
     position: fixed;
-    left: 201px;
-    right: 0;
-    top: 70%;
-    bottom: 0px;
-    background-color: #ccc;
+    right: 10px;
+    bottom: 10px;
+    width: 320px;
+    height: 320px;
+    background-color: #fff;
+    border: 1px solid #999;
+    z-index: 9999;
+    box-shadow: 0px 0px 10px #777;
+    cursor: move;
 }
 
 #dragMessage
