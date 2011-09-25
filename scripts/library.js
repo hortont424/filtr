@@ -174,8 +174,8 @@ function editorFilterDrag(el)
         $(this).appendTo(this.parentNode);
     }).drag(function(ev, dd) {
         $(this).css({
-            top: dd.offsetY,
-            left: dd.offsetX
+            top: Math.max(dd.offsetY, 5),
+            left: Math.max(dd.offsetX, 5)
         });
         updateNoodles();
     }, {relative: true, handle: ".dragHandle"});
@@ -213,8 +213,8 @@ function loadFilters(filters)
             var editorOffset = $("#editor").offset();
             $(dd.proxy).css({
                 position: "absolute",
-                left: parseInt($(dd.proxy).css("left")) - editorOffset.left + "px",
-                top: parseInt($(dd.proxy).css("top")) - editorOffset.top + "px"
+                left: Math.max(parseInt($(dd.proxy).css("left")) - editorOffset.left, 5) + "px",
+                top: Math.max(parseInt($(dd.proxy).css("top")) - editorOffset.top, 5) + "px"
             });
 
             editorFilterDrag($(dd.proxy));
