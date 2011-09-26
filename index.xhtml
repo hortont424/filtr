@@ -10,7 +10,11 @@
     <script type="text/javascript" charset="utf-8">
     function onLoad()
     {
-        filters = [{"name": "Gaussian Blur", "icon": "gaussian-blur.png", "inputs": ["in"], "displayName": "feGaussianBlur", "parameters": {"stdDeviation": ["number", 0, 100, 5]}}];
+        filters = [
+        {"name": "Gaussian Blur", "icon": "gaussian-blur.png", "inputs": ["in"], "displayName": "feGaussianBlur", "parameters": {"stdDeviation": {"type": "number", "min": 0, "max": 20, "default": 5, "name": "Standard Deviation"}}},
+
+        {"name": "Blend", "icon": "gaussian-blur.png", "inputs": ["in", "in2"], "displayName": "feBlend", "parameters": {"mode": {"type": "choice", "choices": ["normal", "multiply", "screen", "darken", "lighten"], "default": "normal", "name": "Mode"}}}
+        ];
 
         loadFilters(filters);
 

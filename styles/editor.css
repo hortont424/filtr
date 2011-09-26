@@ -24,7 +24,7 @@ div.filterNode
     border: 1px solid #999;
     border-radius: 8px;
     width: 200px;
-    height: 4em;
+    height: 3em;
     position: fixed;
     z-index: 500;
     opacity: 0.3;
@@ -94,9 +94,57 @@ div.noodle
     box-shadow: 0px 0px 4px #999;
 }
 
+table.parameters
+{
+    padding: 4px 0px 0px 7px;
+    position: absolute;
+    top: 2.2em;
+    left: 5px;
+    right: 15px;
+    font-size: 8pt;
+    color: #888;
+    font-weight: normal;
+    text-align: right;
+    opacity: 0;
+    -webkit-transition: opacity 0.25s ease-in-out;
+}
+
+div.filterNodeLanded > table.parameters
+{
+    opacity: 1;
+}
+
+span.parameterName
+{
+    margin-right: 5px;
+}
+
+.rangeInput
+{
+    position: relative;
+    top: 2px;
+    left: 5px;
+    width: 100%;
+}
+
 /* Move these elsewhere */
 
 .feMasterInput
 {
     height: 3em !important;
+}
+
+.feGaussianBlur
+{
+    width: 300px !important;
+}
+
+div.filterNodeLanded.feGaussianBlur
+{
+    height: 4.6em !important;
+}
+
+div.filterNodeLanded.feBlend
+{
+    height: 4.8em !important;
 }

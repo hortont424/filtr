@@ -3,8 +3,9 @@
 var liveNodes = [];
 var outgoingNoodles = {}; // filterBubble[id] -> noodle-element
 var noodleConnections = {}; // filterBubble[id] -> filterBubble[id]
-var parameterMap = {}; // filterBubble[id] -> [filterNode[id], parameter]
-var reverseParameterMap = {}; // filterNode[id] -> {parameter: filterBubble[id]}
+var connectionMap = {}; // filterBubble[id] -> [filterNode[id], parameter]
+var reverseConnectionMap = {}; // filterNode[id] -> {I/O parameter name: filterBubble[id]}
+var parameterMap = {}; // filterNode[id] -> {parameter: <input> element}
 var currentID = 0, currentResultID = 0;
 var masterInput;
 var filterTypes = {}; // filterNode[id] -> filter object
@@ -68,14 +69,14 @@ function getConnectedElements(startId)
     {
         var children = [];
 
-        for(paramName in reverseParameterMap[id])
+        for(paramName in reverseConnectionMap[id])
         {
-            var ch = reverseParameterMap[id][paramName];
+            var ch = reverseConnectionMap[id][paramName];
 
             if(ch in noodleConnections)
             {
                 children.push(noodleConnections[ch]);
-                children.push(parameterMap[noodleConnections[ch]][0]);
+                children.push(connectionMap[noodleConnections[ch]][0]);
             }
 
             children.push(ch);
@@ -126,7 +127,7 @@ function updateFilter()
         var filterElement = document.createElementNS(SVGNS, filterTypes[filterId]["displayName"]);
         filterElementForFilterId[filterId] = filterElement;
         var resultId = newResultID();
-        resultIDForOutputBubbleId[reverseParameterMap[filterId]["result"]] = resultId;
+        resultIDForOutputBubbleId[reverseConnectionMap[filterId]["result"]] = resultId;
         filterElement.setAttribute("result", resultId);
         filter.appendChild(filterElement);
     }
@@ -138,12 +139,12 @@ function updateFilter()
 
         var filterElement = filterElementForFilterId[filterId];
 
-        for(attrName in reverseParameterMap[filterId])
+        for(attrName in reverseConnectionMap[filterId])
         {
             if(attrName == "result")
                 continue;
 
-            var attrBubbleId = reverseParameterMap[filterId][attrName];
+            var attrBubbleId = reverseConnectionMap[filterId][attrName];
 
             // this is bad!
             for(fromBubbleId in noodleConnections)
@@ -154,15 +155,16 @@ function updateFilter()
                     var resultID = resultIDForOutputBubbleId[fromBubbleId];
                     if(resultID)
                         filterElement.setAttribute(attrName, resultID);
+                    else // add at the beginning if we have no input (yikes.)
+                        $(filter).prepend($(filterElement))
+                    break; // maybe not later
                 }
             }
         }
 
         for(paramName in filterTypes[filterId]["parameters"])
         {
-            var paramDetails = filterTypes[filterId]["parameters"][paramName];
-
-            filterElement.setAttribute(paramName, paramDetails[3]);
+            filterElement.setAttribute(paramName, parameterMap[filterId][paramName].get(0).value);
         }
     }
 
@@ -215,8 +217,8 @@ function setupMasterInput()
     masterInput.addClass("filterNodeLanded");
     masterInput.addClass("feMasterInput");
 
-    parameterMap[output.attr("id")] = [masterInput.attr("id"), "result"];
-    reverseParameterMap[masterInput.attr("id")] = {"result": output.attr("id")};
+    connectionMap[output.attr("id")] = [masterInput.attr("id"), "result"];
+    reverseConnectionMap[masterInput.attr("id")] = {"result": output.attr("id")};
 
     $("#editor").append(masterInput);
 }
@@ -308,10 +310,16 @@ function loadFilters(filters)
     function proxyWithParams(f)
     {
         var proxy = $("<div class='filterNode'><div class='dragHandle'>" + f["name"] + "</div></div>");
-        proxy.attr("id", newID());
+        var proxyId = newID()
+        proxy.attr("id", proxyId);
+        proxy.addClass(f["displayName"]);
+
+        var parameterContainer = $("<table class='parameters'></table>");
+        proxy.append(parameterContainer);
 
         filterTypes[proxy.attr("id")] = f;
-        reverseParameterMap[proxy.attr("id")] = {};
+        reverseConnectionMap[proxyId] = {};
+        parameterMap[proxyId] = {};
 
         // eventually these need to be dynamic based on the filter
 
@@ -322,23 +330,57 @@ function loadFilters(filters)
             connectionDrag(input);
             inputRight += 24;
             var inputAttrName = f["inputs"][i];
-            parameterMap[input.attr("id")] = [proxy.attr("id"), inputAttrName];
+            connectionMap[input.attr("id")] = [proxyId, inputAttrName];
 
-            reverseParameterMap[proxy.attr("id")][inputAttrName] = input.attr("id");
+            reverseConnectionMap[proxyId][inputAttrName] = input.attr("id");
         }
 
         var output = $("<div style='bottom: -8px;' class='filterBubble filterBubbleOut' />").appendTo(proxy);
         connectionDrag(output);
-        parameterMap[output.attr("id")] = [proxy.attr("id"), "result"];
-        reverseParameterMap[proxy.attr("id")]["result"] = output.attr("id");
+        connectionMap[output.attr("id")] = [proxyId, "result"];
+        reverseConnectionMap[proxyId]["result"] = output.attr("id");
+
+        for(paramName in f["parameters"])
+        {
+            var paramSettings = f["parameters"][paramName];
+            var paramControl = $("<tr class='parameter'><td class='parameterName'>" + paramSettings["name"] + "</td></tr>");
+            var paramInput;
+
+            parameterContainer.append(paramControl);
+
+            if(paramSettings["type"] == "number")
+            {
+                paramInput = $("<input class='rangeInput' type='range' min='" + paramSettings["min"] + "' max='" + paramSettings["max"] + "' value='" + paramSettings["default"] + "' />");
+                paramInput.change(function() { updateFilter(); })
+                var paramTd = $("<td/>");
+                paramControl.append(paramTd.append(paramInput));
+            }
+            else if(paramSettings["type"] == "choice")
+            {
+                paramInput = $("<select/>");
+
+                for(i in paramSettings["choices"])
+                {
+                    paramInput.append($("<option>" + paramSettings["choices"][i] + "</option>"));
+                }
+
+                paramInput.change(function() { updateFilter(); })
+
+                var paramTd = $("<td/>");
+                paramControl.append(paramTd.append(paramInput));
+            }
+
+            parameterMap[proxyId][paramName] = paramInput;
+        }
 
         return proxy;
     }
 
     function listFilterProxyDrag(el)
     {
+        var filterType = f;
         el.drag("start", function(ev, dd) {
-            var proxy = proxyWithParams(f);
+            var proxy = proxyWithParams(filterType);
             $("#editor").prepend(proxy);
             return proxy;
         }).drag(function(ev, dd) {
