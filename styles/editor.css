@@ -114,6 +114,11 @@ div.filterNodeLanded > table.parameters
     opacity: 1;
 }
 
+td.rightColumn
+{
+    text-align: left;
+}
+
 span.parameterName
 {
     margin-right: 5px;
@@ -127,6 +132,12 @@ span.parameterName
     width: 100%;
 }
 
+.selectInput
+{
+    position: relative;
+    left: 5px;
+}
+
 /* Move these elsewhere */
 
 .feMasterInput
@@ -134,7 +145,7 @@ span.parameterName
     height: 3em !important;
 }
 
-.feGaussianBlur
+.feGaussianBlur, .feTurbulence
 {
     width: 300px !important;
 }
@@ -147,4 +158,9 @@ div.filterNodeLanded.feGaussianBlur
 div.filterNodeLanded.feBlend
 {
     height: 4.8em !important;
+}
+
+div.filterNodeLanded.feTurbulence
+{
+    height: 9em !important;
 }

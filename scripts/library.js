@@ -1,6 +1,5 @@
 // weekend project, so it's pretty terrible!
 
-var liveNodes = [];
 var outgoingNoodles = {}; // filterBubble[id] -> noodle-element
 var noodleConnections = {}; // filterBubble[id] -> filterBubble[id]
 var connectionMap = {}; // filterBubble[id] -> [filterNode[id], parameter]
@@ -75,17 +74,18 @@ function getConnectedElements(startId)
 
             if(ch in noodleConnections)
             {
-                children.push(noodleConnections[ch]);
+                //children.push(noodleConnections[ch]);
                 children.push(connectionMap[noodleConnections[ch]][0]);
             }
 
-            children.push(ch);
+            //children.push(ch);
         }
 
         return children;
     }
 
-    var connectedElements = {startId: 1};
+    var connectedElements = {}
+    connectedElements[startId] = 1;
     var searchStack = [startId];
 
     while(searchStack.length)
@@ -107,6 +107,19 @@ function getConnectedElements(startId)
     return connectedElements;
 }
 
+function getToplevelElements()
+{
+    var toplevels = {};
+
+    for(nodeName in reverseConnectionMap)
+    {
+        if(!("in" in reverseConnectionMap[nodeName]))
+            toplevels[nodeName] = 1;
+    }
+
+    return toplevels;
+}
+
 function updateFilter()
 {
     var filter = document.createElementNS(SVGNS, "filter");
@@ -118,6 +131,11 @@ function updateFilter()
     filter.setAttribute("id", "filt");
 
     var reachableFilterElements = getConnectedElements(masterInput.attr("id"));
+    var toplevels = getToplevelElements();
+    for(var x in toplevels)
+    {
+        reachableFilterElements[x] = 1;
+    }
 
     for(filterId in filterTypes)
     {
@@ -156,7 +174,9 @@ function updateFilter()
                     if(resultID)
                         filterElement.setAttribute(attrName, resultID);
                     else // add at the beginning if we have no input (yikes.)
-                        $(filter).prepend($(filterElement))
+                        filterElement.setAttribute(attrName, "SourceGraphic");
+                        //$(filter).prepend($(filterElement));
+
                     break; // maybe not later
                 }
             }
@@ -166,7 +186,15 @@ function updateFilter()
         {
             filterElement.setAttribute(paramName, parameterMap[filterId][paramName].get(0).value);
         }
+
+        var foundReferencingElement = reverseConnectionMap[filterId]["result"] in noodleConnections;
+
+        // add at the end if we have no output (yikes.)
+        if(!foundReferencingElement)
+            $(filter).append($(filterElement));
     }
+
+    // all this trying to get things in the right order is really icky, there's a better way
 
     if(filter.childNodes.length == 0)
     {
@@ -175,10 +203,19 @@ function updateFilter()
         filter.appendChild(filterElement);
     }
 
+    var a = getConnectedElements(masterInput.attr("id"));
+    var b = " ";
+    for(i in a)
+    {
+        b += i + " ";
+        $(filter).append($(filterElementForFilterId[i]));
+    }
+
     $("#defs").empty();
     $("#defs").append(filter);
 
     //$("#previewContainer").html((new XMLSerializer()).serializeToString(filter).replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+    //$("#previewContainer").html(b);
 }
 
 function updateNoodles()
@@ -348,16 +385,20 @@ function loadFilters(filters)
 
             parameterContainer.append(paramControl);
 
-            if(paramSettings["type"] == "number")
+            if(paramSettings["type"] == "number" || paramSettings["type"] == "integer")
             {
-                paramInput = $("<input class='rangeInput' type='range' min='" + paramSettings["min"] + "' max='" + paramSettings["max"] + "' value='" + paramSettings["default"] + "' />");
+                var step = 0.01;
+                if(paramSettings["type"] == "integer")
+                    step = 1;
+
+                paramInput = $("<input class='rangeInput' type='range' step='" + step + "' min='" + paramSettings["min"] + "' max='" + paramSettings["max"] + "' value='" + paramSettings["default"] + "' />");
                 paramInput.change(function() { updateFilter(); })
-                var paramTd = $("<td/>");
+                var paramTd = $("<td class='rightColumn'/>");
                 paramControl.append(paramTd.append(paramInput));
             }
             else if(paramSettings["type"] == "choice")
             {
-                paramInput = $("<select/>");
+                paramInput = $("<select class='selectInput' />");
 
                 for(i in paramSettings["choices"])
                 {
@@ -366,7 +407,7 @@ function loadFilters(filters)
 
                 paramInput.change(function() { updateFilter(); })
 
-                var paramTd = $("<td/>");
+                var paramTd = $("<td class='rightColumn'/>");
                 paramControl.append(paramTd.append(paramInput));
             }
 
