@@ -188,6 +188,11 @@ function updateFilter()
                     break; // maybe not later
                 }
             }
+
+            if((attrName == "in" || attrName == "in2") && !filterElement.hasAttribute(attrName))
+            {
+                filterElement.setAttribute(attrName, "garbage");
+            }
         }
 
         for(paramName in filterTypes[filterId]["parameters"])
