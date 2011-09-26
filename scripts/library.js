@@ -131,10 +131,18 @@ function updateFilter()
     filter.setAttribute("id", "filt");
 
     var reachableFilterElements = getConnectedElements(masterInput.attr("id"));
+    var directlyReachableFilterElements = getConnectedElements(masterInput.attr("id"));
     var toplevels = getToplevelElements();
     for(var x in toplevels)
     {
         reachableFilterElements[x] = 1;
+
+        var toplevelChildren = getConnectedElements(x);
+
+        for(toplevelChild in toplevelChildren)
+        {
+            reachableFilterElements[toplevelChild] = 1;
+        }
     }
 
     for(filterId in filterTypes)
@@ -209,6 +217,30 @@ function updateFilter()
     {
         b += i + " ";
         $(filter).append($(filterElementForFilterId[i]));
+    }
+
+    var orderedToplevels = [];
+
+    for(var top in toplevels)
+    {
+        var topChildren = getConnectedElements(top);
+
+        for(topChild in topChildren)
+        {
+            if(topChild in directlyReachableFilterElements)
+            {
+                break;
+            }
+
+            orderedToplevels.push(topChild);
+        }
+    }
+
+    orderedToplevels.reverse();
+
+    for(var top in orderedToplevels)
+    {
+        $(filter).prepend($(filterElementForFilterId[orderedToplevels[top]]));
     }
 
     $("#defs").empty();
@@ -402,7 +434,12 @@ function loadFilters(filters)
 
                 for(i in paramSettings["choices"])
                 {
-                    paramInput.append($("<option>" + paramSettings["choices"][i] + "</option>"));
+                    var currentChoice = paramSettings["choices"][i];
+
+                    if(currentChoice == paramSettings["default"])
+                        paramInput.append($("<option selected='selected'>" + currentChoice + "</option>"));
+                    else
+                        paramInput.append($("<option>" + currentChoice + "</option>"));
                 }
 
                 paramInput.change(function() { updateFilter(); })

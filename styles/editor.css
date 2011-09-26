@@ -145,7 +145,7 @@ span.parameterName
     height: 3em !important;
 }
 
-.feGaussianBlur, .feTurbulence
+.feGaussianBlur, .feTurbulence, .feDisplacementMap
 {
     width: 300px !important;
 }
@@ -161,6 +161,11 @@ div.filterNodeLanded.feBlend
 }
 
 div.filterNodeLanded.feTurbulence
+{
+    height: 9em !important;
+}
+
+div.filterNodeLanded.feDisplacementMap
 {
     height: 9em !important;
 }

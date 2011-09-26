@@ -21,6 +21,14 @@
                 "baseFrequency": {"type": "number", "min": 0.01, "max": 1.5, "default": 0.1, "name": "Frequency"},
                 "numOctaves": {"type": "integer", "min": 1, "max": 10, "default": 2, "name": "Octaves"}
             }
+        },
+
+        {"name": "Displacement Map", "icon": "gaussian-blur.png", "inputs": ["in", "in2"], "displayName": "feDisplacementMap",
+            "parameters": {
+                "xChannelSelector": {"type": "choice", "choices": ["R", "G", "B", "A"], "default": "R", "name": "X Channel"},
+                "yChannelSelector": {"type": "choice", "choices": ["R", "G", "B", "A"], "default": "G", "name": "Y Channel"},
+                "scale": {"type": "number", "min": 0.1, "max": 100, "default": 20, "name": "Scale"}
+            }
         }
 
         ];
