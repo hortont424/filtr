@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px">
+<defs>
+<filter id="gblur">
+    <feTurbulence baseFrequency="0.2" />
+</filter>
+</defs>
+<rect fill="#888" width="30px" height="30px" x="9" y="9" filter="url(#gblur)"/>
+</svg>

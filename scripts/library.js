@@ -379,14 +379,49 @@ function editorFilterDrag(el)
     }, {relative: true, handle: ".dragHandle"});
 }
 
+function removeFilter(filterName)
+{
+    $("#" + filterName).addClass("filterNodeRemoved");
+    setTimeout("$('#" + filterName + "').remove();", 1000);
+
+    for(var param in reverseConnectionMap[filterName])
+    {
+        removeNoodle(reverseConnectionMap[filterName][param]);
+        removeNoodle(noodleConnections[reverseConnectionMap[filterName][param]]);
+
+        for(var inBubble in noodleConnections)
+            if(connectionMap[noodleConnections[inBubble]][0] == filterName)
+                removeNoodle(inBubble);
+    }
+
+    for(var bubble in connectionMap)
+    {
+        if(connectionMap[bubble][0] == filterName)
+        {
+            delete connectionMap[bubble];
+        }
+    }
+
+    delete reverseConnectionMap[filterName];
+    delete parameterMap[filterName];
+    delete filterTypes[filterName];
+
+    updateNoodles();
+    updateFilter();
+}
+
 function loadFilters(filters)
 {
     function proxyWithParams(f)
     {
+        var proxyId = newID();
         var proxy = $("<div class='filterNode'><div class='dragHandle'>" + f["name"] + "</div></div>");
-        var proxyId = newID()
         proxy.attr("id", proxyId);
         proxy.addClass(f["displayName"]);
+
+        var closeButton = $("<div class='closeButton'></div>");
+        closeButton.click({"id": proxyId}, function(ev) {removeFilter(ev.data["id"])});
+        proxy.find(".dragHandle").append(closeButton);
 
         var parameterContainer = $("<table class='parameters'></table>");
         proxy.append(parameterContainer);
@@ -417,7 +452,7 @@ function loadFilters(filters)
         for(paramName in f["parameters"])
         {
             var paramSettings = f["parameters"][paramName];
-            var paramControl = $("<tr class='parameter'><td class='parameterName'>" + paramSettings["name"] + "</td></tr>");
+            var paramControl = $("<tr class='parameter'><td class='parameterName leftColumn'>" + paramSettings["name"] + "</td></tr>");
             var paramInput;
 
             parameterContainer.append(paramControl);

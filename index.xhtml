@@ -11,11 +11,11 @@
     function onLoad()
     {
         filters = [
-        {"name": "Gaussian Blur", "icon": "gaussian-blur.png", "inputs": ["in"], "displayName": "feGaussianBlur", "parameters": {"stdDeviation": {"type": "number", "min": 0, "max": 20, "default": 5, "name": "Standard Deviation"}}},
+        {"name": "Gaussian Blur", "icon": "gaussian-blur.svg", "inputs": ["in"], "displayName": "feGaussianBlur", "parameters": {"stdDeviation": {"type": "number", "min": 0, "max": 20, "default": 5, "name": "Amount"}}},
 
-        {"name": "Blend", "icon": "gaussian-blur.png", "inputs": ["in", "in2"], "displayName": "feBlend", "parameters": {"mode": {"type": "choice", "choices": ["normal", "multiply", "screen", "darken", "lighten"], "default": "normal", "name": "Mode"}}},
+        {"name": "Blend", "icon": "blend.svg", "inputs": ["in", "in2"], "displayName": "feBlend", "parameters": {"mode": {"type": "choice", "choices": ["normal", "multiply", "screen", "darken", "lighten"], "default": "normal", "name": "Mode"}}},
 
-        {"name": "Turbulence", "icon": "gaussian-blur.png", "inputs": [], "displayName": "feTurbulence",
+        {"name": "Turbulence", "icon": "turbulence.svg", "inputs": [], "displayName": "feTurbulence",
             "parameters": {
                 "type": {"type": "choice", "choices": ["fractalNoise", "turbulence"], "default": "fractalNoise", "name": "Type"},
                 "baseFrequency": {"type": "number", "min": 0.01, "max": 1.5, "default": 0.1, "name": "Frequency"},
@@ -23,11 +23,24 @@
             }
         },
 
-        {"name": "Displacement Map", "icon": "gaussian-blur.png", "inputs": ["in", "in2"], "displayName": "feDisplacementMap",
+        {"name": "Displacement Map", "icon": "displacement.svg", "inputs": ["in", "in2"], "displayName": "feDisplacementMap",
             "parameters": {
                 "xChannelSelector": {"type": "choice", "choices": ["R", "G", "B", "A"], "default": "R", "name": "X Channel"},
                 "yChannelSelector": {"type": "choice", "choices": ["R", "G", "B", "A"], "default": "G", "name": "Y Channel"},
                 "scale": {"type": "number", "min": 0.1, "max": 100, "default": 20, "name": "Scale"}
+            }
+        },
+
+        {"name": "Composite", "icon": "composite.svg", "inputs": ["in", "in2"], "displayName": "feComposite",
+            "parameters": {
+                "operator": {"type": "choice", "choices": ["over", "in", "out", "atop", "xor"], "default": "over", "name": "Operator"}
+            }
+        },
+
+        {"name": "Morphology", "icon": "gaussian-blur.svg", "inputs": ["in"], "displayName": "feMorphology",
+            "parameters": {
+                "radius": {"type": "number", "min": 1, "max": 20, "default": 3, "name": "Radius"},
+                "operator": {"type": "choice", "choices": ["erode", "dilate"], "default": "erode", "name": "Operator"}
             }
         }
 
@@ -48,6 +61,12 @@
             });
         });
     }
+
+    function updateSelectedPreview()
+    {
+        var newImageURL = "images/" + $("#previewChooser").get(0).value;
+        $("#previewInnerImage").get(0).setAttributeNS("http://www.w3.org/1999/xlink", "href", newImageURL);
+    }
     </script>
 </head>
 <body id="body" onload="onLoad()">
@@ -61,10 +80,14 @@
     <div id="editor" />
 </div>
 <div id="previewContainer">
-    <svg width="320px" height="320px" xmlns="http://www.w3.org/2000/svg">
+    <select id="previewChooser" onchange="updateSelectedPreview()">
+        <option value="butterfly.svg">Butterfly</option>
+        <option value="tiger.svg">Tiger</option>
+    </select>
+    <svg id="previewImage" width="320px" height="320px" xmlns="http://www.w3.org/2000/svg">
         <defs id="defs">
         </defs>
-        <image x="0" y="0" width="320px" height="320px" xlink:href="images/butterfly.svg" filter="url(#filt)"/>
+        <image id="previewInnerImage" x="0" y="0" width="320px" height="320px" xlink:href="images/butterfly.svg" filter="url(#filt)"/>
     </svg>
 </div>
 </body>

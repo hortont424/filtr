@@ -5,7 +5,6 @@
     right: 0;
     top: 0px;
     bottom: 0px;
-    border-bottom: 2px solid #999;
     background-color: #eee;
 }
 
@@ -16,6 +15,32 @@
     bottom: 0px;
     top: 20pt;
     overflow: scroll;
+}
+
+div.closeButton
+{
+    width: 1.2em;
+    height: 1.2em;
+    background-color: #868c93;
+    border-radius: 1.2em;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    position: absolute;
+    right: 4px;
+    cursor: pointer;
+    top: 3px;
+}
+
+div.closeButton:after
+{
+    content: "x";
+    font-family: Monaco;
+    color: white;
+    text-shadow: 0px 0px 0px transparent;
+    font-weight: normal;
+    position: relative;
+    font-size: 11px;
+    top: -2px;
+    left: 4px;
 }
 
 div.filterNode
@@ -39,6 +64,12 @@ div.filterNodeLanded
     -webkit-transition: height 0.25s ease-in-out;
     opacity: 1.0;
     height: 8em;
+}
+
+div.filterNodeRemoved
+{
+    -webkit-transition: opacity 0.5s ease-in-out;
+    opacity: 0;
 }
 
 div.filterBubble
@@ -66,10 +97,15 @@ div.filterBubbleConnected:hover
     opacity: 1.0 !important;
 }
 
+.feMasterInput>.dragHandle
+{
+    padding: 5px !important;
+}
+
 div.dragHandle
 {
     cursor: move;
-    padding: 5px;
+    padding: 5px 25px 5px 5px;
     position: absolute;
     left: 0px;
     top: 0px;
@@ -96,22 +132,27 @@ div.noodle
 
 table.parameters
 {
-    padding: 4px 0px 0px 7px;
-    position: absolute;
+    padding: 29px 0px 0px 7px;
     top: 2.2em;
     left: 5px;
     right: 15px;
+    width: 100%;
     font-size: 8pt;
     color: #888;
     font-weight: normal;
     text-align: right;
     opacity: 0;
-    -webkit-transition: opacity 0.25s ease-in-out;
+    -webkit-transition: opacity 0.5s ease-in-out;
 }
 
 div.filterNodeLanded > table.parameters
 {
     opacity: 1;
+}
+
+td.leftColumn
+{
+    width: 25%;
 }
 
 td.rightColumn
@@ -129,7 +170,7 @@ span.parameterName
     position: relative;
     top: 2px;
     left: 5px;
-    width: 100%;
+    width: 80%;
 }
 
 .selectInput
@@ -145,19 +186,24 @@ span.parameterName
     height: 3em !important;
 }
 
-.feGaussianBlur, .feTurbulence, .feDisplacementMap
+.feGaussianBlur, .feTurbulence, .feDisplacementMap, .feBlend, .feComposite, .feMorphology
 {
-    width: 300px !important;
+    width: 250px !important;
 }
 
 div.filterNodeLanded.feGaussianBlur
 {
-    height: 4.6em !important;
+    height: 4.9em !important;
 }
 
 div.filterNodeLanded.feBlend
 {
-    height: 4.8em !important;
+    height: 5em !important;
+}
+
+div.filterNodeLanded.feComposite
+{
+    height: 5em !important;
 }
 
 div.filterNodeLanded.feTurbulence
@@ -167,5 +213,10 @@ div.filterNodeLanded.feTurbulence
 
 div.filterNodeLanded.feDisplacementMap
 {
-    height: 9em !important;
+    height: 9.2em !important;
+}
+
+div.filterNodeLanded.feMorphology
+{
+    height: 7em !important;
 }
