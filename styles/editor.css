@@ -220,3 +220,8 @@ div.filterNodeLanded.feMorphology
 {
     height: 7em !important;
 }
+
+div.filterNodeLanded.feFlood
+{
+    height: 9.9em !important;
+}

@@ -487,6 +487,44 @@ function loadFilters(filters)
                 var paramTd = $("<td class='rightColumn'/>");
                 paramControl.append(paramTd.append(paramInput));
             }
+            else if(paramSettings["type"] == "color")
+            {
+                var d = paramSettings["default"].substring(4);
+                d = d.substring(0, d.length - 1);
+                dparts = d.split(",");
+                redDefault = dparts[0];
+                greenDefault = dparts[1];
+                blueDefault = dparts[2];
+
+                redInput = $("<input class='rangeInput' type='range' step='1' min='0' max='255' value='" + redDefault + "' />");
+                greenInput = $("<input class='rangeInput' type='range' step='1' min='0' max='255' value='" + greenDefault + "' />");
+                blueInput = $("<input class='rangeInput' type='range' step='1' min='0' max='255' value='" + blueDefault + "' />");
+                redInput.change(function() { updateFilter(); })
+                greenInput.change(function() { updateFilter(); })
+                blueInput.change(function() { updateFilter(); })
+
+                var paramTd = $("<td class='rightColumn'/>");
+                paramTd.append(redInput);
+                paramTd.append(greenInput);
+                paramTd.append(blueInput);
+                paramControl.append(paramTd);
+
+                function ColorMerger(ri, gi, bi) {
+                    var value = 0;
+
+                    this.__defineGetter__("value", function(){
+                        return "rgb(" + ri.get(0).value + ", "+ gi.get(0).value + ", " + bi.get(0).value + ")";
+                    });
+
+                    this.__defineSetter__("value", function(val){
+                        value = val;
+                    });
+
+                    this.get = function (i) { return this; };
+                }
+
+                paramInput = new ColorMerger(redInput, greenInput, blueInput);
+            }
 
             parameterMap[proxyId][paramName] = paramInput;
         }
